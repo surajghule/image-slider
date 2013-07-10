@@ -1,0 +1,14 @@
+/* 
+    Document   : style
+    Author     : Suraj
+    Description:
+    
+*/
+.slider-wrapper {
+    position: relative;
+    width: 500px;
+    height: 375px;
+    overflow: hidden;
+}
+#slider .nivo-main-image { height: 375px; }
+#slider img { max-width: none; height: 375px; }
