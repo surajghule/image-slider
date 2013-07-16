@@ -1,0 +1,8 @@
+#sortable { width: 100%;display: block; }
+#sortable .clone-div { float: left;width: 300px;padding: 0;min-height: 150px;margin: 10px 15px; }
+.remove-btn { float:right; }
+.clone-parent { width: 100%; display: block; text-align: right; }
+.clone-parent .clone-btn { margin: 10px 0; }
+.upload-wrap { margin: 10px 0; }
+.clear { clear: both; }
+.upload_image_src{ border: 1px solid #333; width: 300px; height: 180px; display: block} 

@@ -7,9 +7,10 @@ jQuery(document).ready(function() {
         });
     });
     jQuery('#sortable').sortable();
-    var custom_uploader;
+    
     jQuery('.upload_image_button').click(function() {
-            var btn = jQuery(this);
+               var custom_uploader;
+               var btn = jQuery(this);
             //If the uploader object has already been created, reopen the dialog
             if (custom_uploader) {
                     custom_uploader.open();
@@ -39,7 +40,7 @@ jQuery(document).ready(function() {
 
 function makeClone(){
     // clone the div
-    var cloned = jQuery("tr.clone-div").first().clone(false);
+    var cloned = jQuery("div.clone-div").first().clone(false);
     // change all id values to a new unique value by adding "_cloneX" to the end
 
     // where X is a number that increases each time you make a clone

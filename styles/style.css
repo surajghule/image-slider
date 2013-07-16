@@ -5,6 +5,8 @@
     
 */
 .slider-wrapper {
+    border: 1px solid #333;
+    display: block;
     position: relative;
     width: 500px;
     height: 375px;

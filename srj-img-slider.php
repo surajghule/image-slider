@@ -32,49 +32,53 @@ function slideshow_admin_fn() { ?>
             <form action="options.php" method="post" ><?php
                 settings_fields( 'slideshow_plugin_options' );
                 do_settings_sections( __FILE__ );
-                $slideshow_plugin_options = get_option( 'slideshow_plugin_options' ); ?>
-                <div class="metabox-holder align_left" id="">
+                $slideshow_plugin_options = (get_option( 'slideshow_plugin_options' ))? get_option( 'slideshow_plugin_options' ) : rtp_slider_default_values(); ?>
+                <div class="metabox-holder align_left">
                     <div class="postbox-container">
                         <div class="meta-box-sortables">
                             <div class="postbox">
                                 <div title="Click to toggle" class="handlediv"><br /></div>
                                 <h3 class="hndle">Slideshow Settings</h3>
                                 <div class="inside">
-                                    <table class="form-table">
-                                        <tbody id="sortable">
+                                    <div class="div-block"><strong>Note:</strong><i> Use drag and drop to reorder the slides and save the changes.</i><br/></div>
+                                    <div class="div-block"><strong>Note:</strong><i>Use Add New Slide to create a new slide.</i><br></div>
+                                        <div id="sortable">
                                             <?php 
-                                            if (isset($slideshow_plugin_options['upload_image_id'])) {
+                                            if (isset($slideshow_plugin_options['upload_image_id'])&& count($slideshow_plugin_options['upload_image_id']) > 0) {
                                                 for ($i=0;$i<count($slideshow_plugin_options['upload_image_id']);$i++) { ?>
-                                                    <tr class="clone-div">
-                                                        <td>
-                                                            <input type='button' class="upload_image_button" value='upload' /><br/><br/>
-                                                            <?php $image_src = wp_get_attachment_image_src($slideshow_plugin_options['upload_image_id'][$i]); ?>
-                                                            <input type="button" class="clone-btn" value="Clone" onclick="makeClone();" /><br/>
+                                                    <div class="clone-div">
+                                                        <div>
+                                                            <input type='hidden' name="slideshow_plugin_options[upload_image_id][]" class="upload_image_id" value='<?php if( isset( $slideshow_plugin_options['upload_image_id'][$i] ) )echo $slideshow_plugin_options['upload_image_id'][$i]; ?>' />
+                                                            <?php $image_src = wp_get_attachment_image_src(@$slideshow_plugin_options['upload_image_id'][$i], 'slider-thumbnail'); ?>
+                                                            <img id="upload_image" width="300" height="180" src="<?php echo @$image_src[0]; ?>" class="upload_image_src" name='upload' />
+                                                        </div>
+                                                        <div class="upload-wrap">
+                                                            <input type='button' class="upload_image_button" value='upload' />
                                                             <input type='button' id="remove-btn" class="remove-btn" value='remove' <?php echo ($i==0)? 'style="display: none;"' : ''; ?> />
-                                                        </td>
-                                                        <td>
-                                                            <input type='hidden' name="slideshow_plugin_options[upload_image_id][]" class="upload_image_id" value='<?php echo $slideshow_plugin_options['upload_image_id'][$i]; ?>' />
-                                                            <img id="upload_image" width="300" height="180" src="<?php echo $image_src[0]; ?>" class="upload_image_src" name='upload' />
-                                                        </td>
-                                                    </tr>
+                                                        </div>
+                                                    </div>
                                                 <?php } 
                                             } else { ?>
-                                                <tr class="clone-div">
-                                                    <td>
+                                                <div class="clone-div">
+                                                    
+                                                    <div>
+                                                        <input type='hidden' name="slideshow_plugin_options[upload_image_id][]" class="upload_image_id" value='value="<?php if( isset( $slideshow_plugin_options['upload_image_id'] ) ) echo $slideshow_plugin_options['upload_image_id']; ?>" ' />
+                                                        <?php $image_src = wp_get_attachment_image_src( @$slideshow_plugin_options['upload_image_id'], 'slider-thumbnail' ); ?>
+                                                        <img id="upload_image" src="" width="300" height="180" src="<?php echo @$image_src[0]; ?>" name='upload' />
+                                                    </div>
+                                                    <div>
                                                         <input type='button' class="upload_image_button" value='upload' /><br/><br/>
-                                                        <input type="button" class="clone-btn" value="Clone" onclick="makeClone();" /><br/>
+                                                        
                                                         <input type='button' id="remove-btn" class="remove-btn" value='remove' style="display: none;" />
-                                                    </td>
-                                                    <td>
-                                                        <input type='hidden' name="slideshow_plugin_options[upload_image_id][]" class="upload_image_id" value='' />
-                                                        <img id="upload_image" src="" width="300" height="180" name='upload' />
-                                                    </td>
-                                                </tr>
+                                                    </div>
+                                                </div>
                                             <?php } ?>
-                                        </tbody>
-                                    </table>
+                                        </div>
+                                        <div class="clear"></div>
+                                        <div class="clone-parent"><input type="button" class="clone-btn" value="Add New Slide" onclick="makeClone();" /></div>
                                 </div>
                             </div>
+                              
                             <p class="submit"><input type="submit" name="save" class="button-primary" value="<?php esc_attr_e( 'Save Changes' ); ?>" /></p>
                         </div>
                     </div>
@@ -91,6 +95,8 @@ function slideshow_admin_fn() { ?>
 add_action( 'admin_init', 'slideswhow_options_init_fn' );
 function slideswhow_options_init_fn() {
     register_setting( 'slideshow_plugin_options', 'slideshow_plugin_options' );
+    add_image_size( 'slider-large', '600', '450', true);
+    add_image_size( 'slider-thumbnail', '300', '180', true);
 }
 
 /*
@@ -106,7 +112,7 @@ function slideswhow_feeds() {
     //the loop  
     if(isset($slideshow_plugin_options['upload_image_id']) && !empty($slideshow_plugin_options['upload_image_id'])) {
         for($i=0;$i<count($slideshow_plugin_options['upload_image_id']);$i++) {
-            $the_url = wp_get_attachment_image_src($slideshow_plugin_options['upload_image_id'][$i], 'full');
+            $the_url = wp_get_attachment_image_src($slideshow_plugin_options['upload_image_id'][$i], 'slider-large');
             $result .='<img title="' . get_the_title() . '" src="' . $the_url[0] . '" data-thumb="' . $the_url[0] . '" alt=""/>';
         }
     }
@@ -147,13 +153,14 @@ function slideshow_assets() {
     if(is_admin()){
         wp_enqueue_script( 'dashboard' );
         wp_enqueue_style( 'dashboard' );
-        wp_register_script('np_script', plugins_url('js/script.js', __FILE__));   
+        wp_enqueue_style( 'srj-admin-style', plugins_url('styles/admin-style.css', __FILE__) );
+        wp_register_script('np_script', plugins_url('js/script.js', __FILE__));
         wp_enqueue_media('media-uploader');
         wp_enqueue_script('np_script');
-        }
+    }
 
     //Plugin CSS
-        wp_enqueue_style( 'np-styleSheet', plugins_url('styles/nivo-slider.css', __FILE__));
+    wp_enqueue_style( 'np-styleSheet', plugins_url('styles/nivo-slider.css', __FILE__));
     wp_enqueue_style( 'np-theme-styles', plugins_url('styles/default.css', __FILE__));
     wp_enqueue_style( 'custom-styleSheet', plugins_url('styles/style.css', __FILE__));
     //Register Plugin JS
